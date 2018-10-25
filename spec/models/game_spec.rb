@@ -62,43 +62,5 @@ describe Game, type: :model do
         expect(subject.score).to eq 300
       end
     end
-
-    context "last frame" do
-      before do
-        roll_all(times: 18, pins: 0)
-      end
-
-      context "player does not score a spare nor a strike" do
-        before do
-          subject.roll(7)
-          subject.roll(1)
-        end
-
-        it "should not allow to roll another round" do
-          expect{ subject.roll(2) }.to raise_error(Game::GameCompleteError)
-          expect(subject.score).to eq 8
-        end
-      end
-
-      context "player scores a spare" do
-        before { roll_spare }
-
-        it "should allow one more roll" do
-          subject.roll(5)
-          expect(subject.score).to eq 15
-        end
-      end
-
-      context "player scores a strike" do
-        before { roll_strike }
-
-        it "should allow two more rolls" do
-          subject.roll(5)
-          subject.roll(5)
-
-          expect(subject.score).to eq 20
-        end
-      end
-    end
   end
 end

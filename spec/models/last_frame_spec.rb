@@ -60,4 +60,47 @@ describe LastFrame, type: :model do
       end
     end
   end
+
+  describe '#score' do
+    it 'returns zero when no rolls exist' do
+      expect(subject.score).to be_zero
+    end
+
+    context 'player does not score a spare nor a strike' do
+      before do
+        subject.roll(7)
+        subject.roll(1)
+      end
+
+      it 'should not allow to roll another round' do
+        expect(subject.score).to eq 8
+      end
+    end
+
+    context 'player scores a spare' do
+      before do
+        subject.roll(3)
+        subject.roll(7)
+      end
+
+
+      it 'should allow one more roll' do
+        subject.roll(5)
+        expect(subject.score).to eq 15
+      end
+    end
+
+    context 'player scores a strike' do
+      before do
+        subject.roll(10)
+      end
+
+      it 'should allow two more rolls' do
+        subject.roll(5)
+        subject.roll(5)
+
+        expect(subject.score).to eq 20
+      end
+    end
+  end
 end
