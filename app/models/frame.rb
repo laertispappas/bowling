@@ -16,11 +16,9 @@ class Frame < ApplicationRecord
 
   def score
     bonus = if strike?
-              # get next 2
-              0
+              next_frame.rolls.sum(&:score)
             elsif spare?
-              # get next 1
-              0
+              next_frame.rolls.first.score
             else
               0
             end
@@ -43,6 +41,6 @@ class Frame < ApplicationRecord
   end
 
   def spare?
-    rolls.size == 2 && rolls.sum(&:pins) == MAX_PINS_SCORE
+    rolls.size == MAX_ROLLS_COUNT && rolls.sum(&:pins) == MAX_PINS_SCORE
   end
 end

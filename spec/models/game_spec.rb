@@ -65,7 +65,7 @@ describe Game, type: :model do
 
     context "last frame" do
       before do
-        roll_all(times: 19, pins: 0)
+        roll_all(times: 18, pins: 0)
       end
 
       context "player does not score a spare nor a strike" do
@@ -75,7 +75,7 @@ describe Game, type: :model do
         end
 
         it "should not allow to roll another round" do
-          expect{ subject.roll(2) }.to raise_error(StandardError)
+          expect{ subject.roll(2) }.to raise_error(Game::GameCompleteError)
           expect(subject.score).to eq 8
         end
       end
@@ -86,7 +86,7 @@ describe Game, type: :model do
         it "should allow one more roll" do
           subject.roll(5)
 
-          expect{ subject.roll(2) }.to raise_error(StandardError)
+          expect{ subject.roll(2) }.to raise_error(Game::GameCompleteError)
           expect(subject.score).to eq 20
         end
       end
