@@ -15,32 +15,31 @@ class Frame < ApplicationRecord
   end
 
   def score
-    bonus = if strike?
-              next_frame.rolls.sum(&:score)
-            elsif spare?
-              next_frame.rolls.first.score
-            else
-              0
-            end
-    rolls.sum(&:pins) + bonus
+    rolls.sum(&:score) + calculate_bonus
   end
 
   def active?
     return false if strike? || spare?
-    rolls.empty? || !rolls_completed?
+    more_rolls?
+  end
+
+  protected
+
+  def strike?
+    rolls.present? && rolls.first.score == MAX_PINS_SCORE
   end
 
   private
 
-  def rolls_completed?
-    rolls.size == MAX_ROLLS_COUNT
-  end
-
-  def strike?
-    rolls.size == 1 && rolls.first.pins == MAX_PINS_SCORE
+  def calculate_bonus
+    raise NotImplementedError, 'Abstract method'
   end
 
   def spare?
-    rolls.size == MAX_ROLLS_COUNT && rolls.sum(&:pins) == MAX_PINS_SCORE
+    rolls.size == MAX_ROLLS_COUNT && rolls.sum(&:score) == MAX_PINS_SCORE
+  end
+
+  def more_rolls?
+    rolls.empty? || rolls.size < MAX_ROLLS_COUNT
   end
 end

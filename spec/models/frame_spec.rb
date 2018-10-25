@@ -26,16 +26,21 @@ RSpec.describe Frame, type: :model do
 
 
   describe "#score" do
-    it "returns the sum of the rolls" do
+    it "requires calcualte_bonus to be implemented" do
+      expect { subject.score }.to raise_error(NotImplementedError)
+    end
+
+    it "returns the sum of the rolls plus any additional bonus" do
+      allow(subject).to receive(:calculate_bonus).and_return(3)
       subject.roll(2)
       subject.roll(5)
 
-      expect(subject.score).to eq 7
+      expect(subject.score).to eq 10
     end
   end
 
   describe "#active?" do
-    it "returns false when no rolls exist" do
+    it "returns true when no rolls exist" do
       expect(subject.rolls).to be_empty
       expect(subject).to be_active
     end

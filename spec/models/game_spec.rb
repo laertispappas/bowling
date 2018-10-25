@@ -85,9 +85,7 @@ describe Game, type: :model do
 
         it "should allow one more roll" do
           subject.roll(5)
-
-          expect{ subject.roll(2) }.to raise_error(Game::GameCompleteError)
-          expect(subject.score).to eq 20
+          expect(subject.score).to eq 15
         end
       end
 
@@ -98,8 +96,7 @@ describe Game, type: :model do
           subject.roll(5)
           subject.roll(5)
 
-          expect{ subject.roll(2) }.to raise_error(StandardError)
-          expect(subject.score).to eq 30
+          expect(subject.score).to eq 20
         end
       end
     end
