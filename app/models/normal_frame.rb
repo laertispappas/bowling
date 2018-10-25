@@ -1,0 +1,3 @@
+class NormalFrame < Frame
+
+end

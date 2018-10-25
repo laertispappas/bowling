@@ -4,7 +4,8 @@ RSpec.describe Frame, type: :model do
   it { is_expected.to belong_to :game }
   it { is_expected.to belong_to(:next_frame).class_name('Frame').with_foreign_key('next_frame_id') }
   it { is_expected.to have_many :rolls }
-  subject { Frame.create!(game: Game.create!) }
+
+  subject { Frame.create!(game: Game.create!, type: 'Frame') }
 
   describe "#roll" do
     context "frame is not active" do

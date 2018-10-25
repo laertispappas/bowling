@@ -1,0 +1,3 @@
+class LastFrame < Frame
+
+end

@@ -46,7 +46,8 @@ CREATE TABLE ar_internal_metadata (
 CREATE TABLE frames (
     id bigint NOT NULL,
     game_id bigint NOT NULL,
-    next_frame_id bigint
+    next_frame_id bigint,
+    type character varying NOT NULL
 );
 
 
@@ -245,6 +246,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181025105605'),
 ('20181025115523'),
 ('20181025120537'),
-('20181025132101');
+('20181025132101'),
+('20181025144610');
 
 
