@@ -4,6 +4,7 @@ class Frame < ApplicationRecord
   RollError = Class.new(StandardError)
 
   belongs_to :game
+  belongs_to :next_frame, class_name: 'Frame', foreign_key: :next_frame_id, optional: true
   has_many :rolls
 
   default_scope { order(id: :asc) }

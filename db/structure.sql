@@ -45,7 +45,8 @@ CREATE TABLE ar_internal_metadata (
 
 CREATE TABLE frames (
     id bigint NOT NULL,
-    game_id bigint NOT NULL
+    game_id bigint NOT NULL,
+    next_frame_id bigint
 );
 
 
@@ -227,6 +228,14 @@ ALTER TABLE ONLY rolls
 
 
 --
+-- Name: frames fk_rails_f7c268f9a4; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY frames
+    ADD CONSTRAINT fk_rails_f7c268f9a4 FOREIGN KEY (next_frame_id) REFERENCES frames(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -235,6 +244,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20181025105605'),
 ('20181025115523'),
-('20181025120537');
+('20181025120537'),
+('20181025132101');
 
 
