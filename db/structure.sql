@@ -97,6 +97,36 @@ ALTER SEQUENCE games_id_seq OWNED BY games.id;
 
 
 --
+-- Name: rolls; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE rolls (
+    id bigint NOT NULL,
+    frame_id bigint NOT NULL,
+    pins integer NOT NULL
+);
+
+
+--
+-- Name: rolls_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE rolls_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rolls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE rolls_id_seq OWNED BY rolls.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -117,6 +147,13 @@ ALTER TABLE ONLY frames ALTER COLUMN id SET DEFAULT nextval('frames_id_seq'::reg
 --
 
 ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regclass);
+
+
+--
+-- Name: rolls id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolls ALTER COLUMN id SET DEFAULT nextval('rolls_id_seq'::regclass);
 
 
 --
@@ -144,6 +181,14 @@ ALTER TABLE ONLY games
 
 
 --
+-- Name: rolls rolls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolls
+    ADD CONSTRAINT rolls_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -159,11 +204,26 @@ CREATE INDEX index_frames_on_game_id ON public.frames USING btree (game_id);
 
 
 --
+-- Name: index_rolls_on_frame_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_rolls_on_frame_id ON public.rolls USING btree (frame_id);
+
+
+--
 -- Name: frames fk_rails_ee0b37ac02; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY frames
     ADD CONSTRAINT fk_rails_ee0b37ac02 FOREIGN KEY (game_id) REFERENCES games(id);
+
+
+--
+-- Name: rolls fk_rails_f09717ac94; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY rolls
+    ADD CONSTRAINT fk_rails_f09717ac94 FOREIGN KEY (frame_id) REFERENCES frames(id);
 
 
 --
@@ -174,6 +234,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20181025105605'),
-('20181025115523');
+('20181025115523'),
+('20181025120537');
 
 
