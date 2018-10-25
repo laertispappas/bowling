@@ -16,6 +16,8 @@ describe Game, type: :model do
     subject.roll(5)
   end
 
+  it { is_expected.to have_many :frames }
+
   describe "#score" do
     context "player scores 2 pins in all frames" do
       before { roll_all(times: 20, pins: 2) }

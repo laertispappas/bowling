@@ -40,6 +40,35 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: frames; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE frames (
+    id bigint NOT NULL,
+    game_id bigint NOT NULL
+);
+
+
+--
+-- Name: frames_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE frames_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: frames_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE frames_id_seq OWNED BY frames.id;
+
+
+--
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -77,6 +106,13 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: frames id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY frames ALTER COLUMN id SET DEFAULT nextval('frames_id_seq'::regclass);
+
+
+--
 -- Name: games id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -89,6 +125,14 @@ ALTER TABLE ONLY games ALTER COLUMN id SET DEFAULT nextval('games_id_seq'::regcl
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: frames frames_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY frames
+    ADD CONSTRAINT frames_pkey PRIMARY KEY (id);
 
 
 --
@@ -108,12 +152,28 @@ ALTER TABLE ONLY schema_migrations
 
 
 --
+-- Name: index_frames_on_game_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_frames_on_game_id ON public.frames USING btree (game_id);
+
+
+--
+-- Name: frames fk_rails_ee0b37ac02; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY frames
+    ADD CONSTRAINT fk_rails_ee0b37ac02 FOREIGN KEY (game_id) REFERENCES games(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20181025105605');
+('20181025105605'),
+('20181025115523');
 
 

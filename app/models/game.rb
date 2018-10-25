@@ -1,6 +1,5 @@
 class Game < ApplicationRecord
-  # A Game class will hold the current game that is played by N users
-  #
+  has_many :frames
 
   def roll(pins)
   end
