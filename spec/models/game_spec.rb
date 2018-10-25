@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Game, type: :model do
-  subject { Game.new }
+  subject { GameFactory.create! }
 
   def roll_all(times:, pins:)
     0.upto(times - 1) { subject.roll(pins) }
