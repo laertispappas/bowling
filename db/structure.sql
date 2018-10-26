@@ -71,6 +71,36 @@ ALTER SEQUENCE frames_id_seq OWNED BY frames.id;
 
 
 --
+-- Name: game_frames; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE game_frames (
+    id bigint NOT NULL,
+    game_id bigint NOT NULL,
+    user_id bigint NOT NULL
+);
+
+
+--
+-- Name: game_frames_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE game_frames_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: game_frames_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE game_frames_id_seq OWNED BY game_frames.id;
+
+
+--
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -174,6 +204,13 @@ ALTER TABLE ONLY frames ALTER COLUMN id SET DEFAULT nextval('frames_id_seq'::reg
 
 
 --
+-- Name: game_frames id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_frames ALTER COLUMN id SET DEFAULT nextval('game_frames_id_seq'::regclass);
+
+
+--
 -- Name: games id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -208,6 +245,14 @@ ALTER TABLE ONLY ar_internal_metadata
 
 ALTER TABLE ONLY frames
     ADD CONSTRAINT frames_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: game_frames game_frames_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_frames
+    ADD CONSTRAINT game_frames_pkey PRIMARY KEY (id);
 
 
 --
@@ -250,10 +295,40 @@ CREATE INDEX index_frames_on_game_id ON public.frames USING btree (game_id);
 
 
 --
+-- Name: index_game_frames_on_game_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_game_frames_on_game_id ON public.game_frames USING btree (game_id);
+
+
+--
+-- Name: index_game_frames_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_game_frames_on_user_id ON public.game_frames USING btree (user_id);
+
+
+--
 -- Name: index_rolls_on_frame_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_rolls_on_frame_id ON public.rolls USING btree (frame_id);
+
+
+--
+-- Name: game_frames fk_rails_467e754d69; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_frames
+    ADD CONSTRAINT fk_rails_467e754d69 FOREIGN KEY (game_id) REFERENCES games(id);
+
+
+--
+-- Name: game_frames fk_rails_7f1664d866; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_frames
+    ADD CONSTRAINT fk_rails_7f1664d866 FOREIGN KEY (user_id) REFERENCES users(id);
 
 
 --
@@ -292,6 +367,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181025120537'),
 ('20181025132101'),
 ('20181025144610'),
-('20181026123616');
+('20181026123616'),
+('20181026124152');
 
 
