@@ -1,8 +1,12 @@
 class GameFactory
-  MAX_FRAMES_SIZE = 10
+  EmptyUsersError = Class.new(StandardError)
 
   def self.create!(users)
     ApplicationRecord.transaction do
+      # Assert users size ?
+      #
+      raise EmptyUsersError, 'Users are required' if users.blank?
+
       users = create_users!(users)
       game = Game.create!
 
