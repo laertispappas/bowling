@@ -12,6 +12,13 @@ class Game < ApplicationRecord
     current_player_game_frame.frames.sum(&:score)
   end
 
+  def create_game_frames!(user)
+    is_active = game_frames.size.zero?
+    game_frames
+      .create!(user: user, active: is_active)
+      .add_frames!
+  end
+
   private
 
   def current_active_frame
