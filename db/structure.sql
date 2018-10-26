@@ -296,6 +296,13 @@ CREATE INDEX index_game_frames_on_game_id ON public.game_frames USING btree (gam
 
 
 --
+-- Name: index_game_frames_on_game_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_game_frames_on_game_id_and_user_id ON public.game_frames USING btree (game_id, user_id);
+
+
+--
 -- Name: index_game_frames_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -365,6 +372,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181026124152'),
 ('20181026124645'),
 ('20181026131929'),
-('20181026154405');
+('20181026154405'),
+('20181026164356');
 
 
