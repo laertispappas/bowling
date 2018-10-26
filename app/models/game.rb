@@ -1,7 +1,7 @@
 class Game < ApplicationRecord
   GameCompleteError = Class.new(StandardError)
 
-  has_many :frames
+  has_many :game_frames
 
   def roll(pins)
     raise GameCompleteError, 'Game has finished' unless current_active_frame.present?

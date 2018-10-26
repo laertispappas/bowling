@@ -3,7 +3,7 @@ class Frame < ApplicationRecord
   MAX_ROLLS_COUNT = 2
   RollError = Class.new(StandardError)
 
-  belongs_to :game
+  belongs_to :game_frame
   belongs_to :next_frame, class_name: 'Frame', foreign_key: :next_frame_id, optional: true
   has_many :rolls
 
