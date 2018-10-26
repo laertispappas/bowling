@@ -9,12 +9,16 @@ class Game < ApplicationRecord
   end
 
   def score
-    frames.sum(&:score)
+    current_player_game_frame.frames.sum(&:score)
   end
 
   private
 
   def current_active_frame
-    frames.find(&:active?)
+    current_player_game_frame.frames.find(&:active?)
+  end
+
+  def current_player_game_frame
+    game_frames.find_by(active: true)
   end
 end

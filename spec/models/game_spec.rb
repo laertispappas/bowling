@@ -1,7 +1,8 @@
 require "rails_helper"
 
 describe Game, type: :model do
-  subject { GameFactory.create! }
+  let(:users) { [{ name: 'John' }] }
+  subject { GameFactory.create!(users) }
 
   def roll_all(times:, pins:)
     0.upto(times - 1) { subject.roll(pins) }
@@ -15,8 +16,6 @@ describe Game, type: :model do
     subject.roll(5)
     subject.roll(5)
   end
-
-  it { is_expected.to have_many :frames }
 
   describe "#score" do
     context "player scores 2 pins in all frames" do

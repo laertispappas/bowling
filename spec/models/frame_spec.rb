@@ -1,11 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Frame, type: :model do
-  it { is_expected.to belong_to :game }
+  it { is_expected.to belong_to :game_frame }
   it { is_expected.to belong_to(:next_frame).class_name('Frame').with_foreign_key('next_frame_id') }
   it { is_expected.to have_many :rolls }
 
-  subject { Frame.create!(game: Game.create!, type: 'Frame') }
+  let(:game) { Game.create! }
+  let(:user) { User.create(name: 'Some') }
+  let(:game_frame) { GameFrame.create!(game: game, user: user) }
+
+  subject { Frame.create!(game_frame: game_frame, type: 'Frame') }
 
   describe "#roll" do
     context "frame is not active" do
