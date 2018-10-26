@@ -3,7 +3,7 @@ module Api
     class GamesController < ApplicationController
       def create
         game = GameFactory.create!(create_params)
-        render json: game, status: 201
+        render json: GameSerializer.new(game).as_json, status: 201
       end
 
       private
