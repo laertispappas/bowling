@@ -1,10 +1,10 @@
 require 'rails_helper'
 
+require_relative './shared/expected_game_response_spec'
+
 module Api
   module V1
     describe RollsController, type: :request do
-      include SpecSupport::GameResponseAssertions
-
       let(:do_request) do
         post("/api/v1/games/#{game.id}/players/#{player.id}/frames/#{frame.id}/roll",
              params: params)
@@ -33,10 +33,9 @@ module Api
       context 'on valid params' do
         before { do_request }
 
-        it 'responds with the correct http status and payload' do
-          expect(response.status).to eq 201
-          assert_game_response
-        end
+        include_examples "game response"
+
+        it { expect(response.status).to eq 201 }
       end
 
       context 'on invalid params' do

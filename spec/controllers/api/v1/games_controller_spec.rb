@@ -1,10 +1,10 @@
 require 'rails_helper'
 
+require_relative './shared/expected_game_response_spec'
+
 module Api
   module V1
     describe GamesController, type: :request do
-      include SpecSupport::GameResponseAssertions
-
       describe 'GET /api/v1/games/:id' do
         let(:users) { [{ name: 'A' }, { name: 'B' }] }
         let(:game) { GameFactory.create!(users) }
@@ -12,9 +12,9 @@ module Api
         context 'initial game' do
           before { get "/api/v1/games/#{game.id}" }
 
-          it 'responds with the correct http code and json payload' do
-            assert_game_response
-          end
+          include_examples "game response"
+
+          it { expect(response.status).to eq 200 }
         end
 
         context 'with user rolls' do
@@ -31,10 +31,8 @@ module Api
             get "/api/v1/games/#{game.id}"
           end
 
-          it 'responds with the correct http code and json payload' do
-            expect(response.status).to eq 200
-            assert_game_response
-          end
+          include_examples "game response"
+          it { expect(response.status).to eq 200 }
         end
       end
 
@@ -55,10 +53,8 @@ module Api
             }
           end
 
-          it 'responds with the correct http code and json payload' do
-            expect(response.status).to eq 201
-            assert_game_response
-          end
+          include_examples "game response"
+          it { expect(response.status).to eq 201 }
         end
 
         context 'on invalid params' do
