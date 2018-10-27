@@ -49,11 +49,11 @@ class Game < ApplicationRecord
     current_active_game_frame.user
   end
 
-  private
-
   def current_active_frame
     current_active_game_frame.frames.find(&:active?)
   end
+
+  private
 
   def current_active_game_frame
     game_frames.find_by(active: true)

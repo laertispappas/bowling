@@ -3,6 +3,12 @@ module Api
     class RollsController < ApplicationController
 
       def create
+        authorizer = RollAuthorizer.new(game, params)
+
+        unless authorizer.call
+          return render json: { message: authorizer.message }, status: 400
+        end
+
         game.roll create_params
         render json: GameSerializer.new(game), status: 201
       end
