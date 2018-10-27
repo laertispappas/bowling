@@ -15,6 +15,7 @@ RSpec.shared_examples "game response" do
     players.size.times do |player_index|
       user = User.find(players[player_index]["id"])
       expect(players[player_index]["total_score"]).to eq game.score(user)
+      expect(players[player_index]["name"]).to eq user.name
     end
 
     game.game_frames.size.times do |gf_index|
