@@ -19,8 +19,7 @@ class Frame < ApplicationRecord
       Result::Success.new
     end
 
-    # This is not so good... :)
-  rescue => _ex
+  rescue ActiveRecord::RecordInvalid => _ex
     Result::Error.new(_ex)
   end
 

@@ -3,7 +3,7 @@ require 'rails_helper'
 describe NormalFrame, type: :model do
   it { is_expected.to be_a Frame }
 
-  let(:game) { GameFactory.create!([{ name: 'Ruby' }]) }
+  let(:game) { GameFactory.create([{ name: 'Ruby' }]) }
 
   subject { game.game_frames[0].frames.first }
 

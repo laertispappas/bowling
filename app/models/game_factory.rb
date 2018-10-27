@@ -1,7 +1,7 @@
 class GameFactory
   EmptyUsersError = Class.new(StandardError)
 
-  def self.create!(users)
+  def self.create(users)
     ApplicationRecord.transaction do
       users = create_users!(users)
       return false if users.blank?
@@ -14,8 +14,7 @@ class GameFactory
 
       game
     end
-    # ;)
-  rescue => _ex
+  rescue ActiveRecord::RecordInvalid => _ex
     return false
   end
 

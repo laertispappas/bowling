@@ -16,7 +16,7 @@ module Api
         }
       end
 
-      let(:game) { GameFactory.create!(players) }
+      let(:game) { GameFactory.create(players) }
       let(:player) { game.current_player }
       let(:frame) { player.frames.first }
       let(:players) do

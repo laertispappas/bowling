@@ -3,7 +3,7 @@ require 'rails_helper'
 describe LastFrame, type: :model do
   it { is_expected.to be_a Frame }
 
-  let(:game) { GameFactory.create!([{ name: 'Katia' }]) }
+  let(:game) { GameFactory.create([{ name: 'Katia' }]) }
   subject { game.game_frames[0].frames.last }
 
   describe '#active?' do

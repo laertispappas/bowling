@@ -7,7 +7,7 @@ module Api
     describe GamesController, type: :request do
       describe 'GET /api/v1/games/:id' do
         let(:users) { [{ name: 'A' }, { name: 'B' }] }
-        let(:game) { GameFactory.create!(users) }
+        let(:game) { GameFactory.create(users) }
 
         context 'initial game' do
           before { get "/api/v1/games/#{game.id}" }

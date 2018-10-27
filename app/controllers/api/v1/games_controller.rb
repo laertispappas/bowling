@@ -7,7 +7,7 @@ module Api
       end
 
       def create
-        game = GameFactory.create!(create_params)
+        game = GameFactory.create(create_params)
         if game
           render json: GameSerializer.new(game).as_json, status: 201
         else

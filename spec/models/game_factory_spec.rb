@@ -5,7 +5,7 @@ describe GameFactory, type: :model do
 
   describe '.create!' do
     let(:users) { [{ name: 'None' }, { name: 'Some' }] }
-    let(:game) { subject.create!(users) }
+    let(:game) { subject.create(users) }
 
     it 'creates a game with 2 game frames' do
       expect(game).to be_persisted

@@ -3,7 +3,7 @@ require "rails_helper"
 describe Game, type: :model do
   let(:user) { User.find_by_name!('John') }
   let(:users) { [{ name: 'John' }] }
-  subject { GameFactory.create!(users) }
+  subject { GameFactory.create(users) }
 
   def roll_all(times:, pins:)
     0.upto(times - 1) { subject.roll(pins) }
@@ -123,7 +123,7 @@ describe Game, type: :model do
 
     context 'when a current active frame exists with multiple users' do
       let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
-      subject { GameFactory.create!(users) }
+      subject { GameFactory.create(users) }
 
       it 'rolls for the correct user turn' do
         subject.roll(3)
@@ -140,7 +140,7 @@ describe Game, type: :model do
 
     context 'multiple users complete the game' do
       let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
-      subject { GameFactory.create!(users) }
+      subject { GameFactory.create(users) }
 
       it 'has the correct score for all of them' do
         roll_all(times: 40, pins: 2)
@@ -196,7 +196,7 @@ describe Game, type: :model do
   describe '#current_player' do
     let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
 
-    subject { GameFactory.create!(users) }
+    subject { GameFactory.create(users) }
 
     it 'returns the current active player' do
       expect(subject.current_player).to eq subject.game_frames[0].user
