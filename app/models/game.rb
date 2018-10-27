@@ -25,7 +25,9 @@ class Game < ApplicationRecord
   def roll(pins)
     raise GameCompleteError, 'Game has finished' unless current_active_game_frame.present?
 
-    current_active_frame.roll(pins, on_frame_complete: OnFrameCompleted.new(self))
+    current_active_frame.with_lock do
+      current_active_frame.roll(pins, on_frame_complete: OnFrameCompleted.new(self))
+    end
   end
 
   def score(user)

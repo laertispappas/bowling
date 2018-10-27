@@ -10,10 +10,12 @@ class Frame < ApplicationRecord
   default_scope { order(id: :asc) }
 
   def roll(pins, on_frame_complete: -> () { })
-    raise RollError, 'Cannot roll on a completed frame' unless active?
-    rolls.create!(pins: pins)
+    with_lock do
+      raise RollError, 'Cannot roll on a completed frame' unless active?
+      rolls.create!(pins: pins)
 
-    on_frame_complete.call unless active?
+      on_frame_complete.call unless active?
+    end
   end
 
   def score
