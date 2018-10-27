@@ -1,6 +1,11 @@
 class Game < ApplicationRecord
   GameCompleteError = Class.new(StandardError)
   has_many :game_frames
+  has_many :players,
+           through: :game_frames,
+           class_name: 'User',
+           foreign_key: :user_id,
+           source: :user
 
   class OnFrameCompleted
     attr_reader :game
