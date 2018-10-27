@@ -24,7 +24,7 @@ class Game < ApplicationRecord
       end
 
       # all frames completed for the current user
-      unless current_active_game_frame.active?
+      if current_active_game_frame.completed?
         current_active_game_frame.update!(active: false)
       end
     end
@@ -63,7 +63,7 @@ class Game < ApplicationRecord
   end
 
   def completed?
-    !game_frames.all?(&:active?)
+    game_frames.all?(&:completed?)
   end
 
   def winner

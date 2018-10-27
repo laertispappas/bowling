@@ -27,7 +27,7 @@ class GameFrame < ApplicationRecord
     add_frames!
   end
 
-  def active?
-    frames.any?(&:active?)
+  def completed?
+    !frames.any?(&:active?)
   end
 end

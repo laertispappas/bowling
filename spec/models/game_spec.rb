@@ -156,12 +156,14 @@ describe Game, type: :model do
 
   describe '#completed?' do
     let(:users) { [{name: "a"}] }
-    it 'returns playing when game is not completed' do
+    it 'returns false when game is not completed' do
       game = Game.new
+      game.game_frames.new
+      game.game_frames.first.frames.new
       expect(game).to_not be_completed
     end
 
-    it 'returns completed when game is completed' do
+    it 'returns true when game is completed' do
       roll_all(times: 20, pins: 0)
       expect(subject).to be_completed
     end
