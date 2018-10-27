@@ -3,11 +3,9 @@ class GameFactory
 
   def self.create!(users)
     ApplicationRecord.transaction do
-      # Assert users size ?
-      #
-      raise EmptyUsersError, 'Users are required' if users.blank?
-
       users = create_users!(users)
+      return false if users.blank?
+
       game = Game.create!
 
       users.each do |user|
@@ -16,8 +14,13 @@ class GameFactory
 
       game
     end
+    # ;)
+  rescue => _ex
+    return false
   end
 
+  # Not sure if we need to check the maximum allowed users count
+  #
   def self.create_users!(users)
     users.map do |user|
       User.create!(name: user[:name])

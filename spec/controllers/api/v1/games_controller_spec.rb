@@ -62,7 +62,20 @@ module Api
         end
 
         context 'on invalid params' do
-          it 'responds with the correct http code and json payload'
+          let(:params) do
+            {
+              users: [
+                {
+                  name: ''
+                }
+              ]
+            }
+          end
+
+          it 'responds with the correct http code and json payload' do
+            expect(response.status).to eq 422
+            expect(response.message).to be_present
+          end
         end
       end
     end

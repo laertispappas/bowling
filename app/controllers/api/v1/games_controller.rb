@@ -8,7 +8,11 @@ module Api
 
       def create
         game = GameFactory.create!(create_params)
-        render json: GameSerializer.new(game).as_json, status: 201
+        if game
+          render json: GameSerializer.new(game).as_json, status: 201
+        else
+          render json: { message: 'cannot create game' }, status: 422
+        end
       end
 
       private
