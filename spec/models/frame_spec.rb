@@ -1,18 +1,47 @@
 require 'rails_helper'
 
 RSpec.describe Frame, type: :model do
-  it { is_expected.to belong_to :game }
+  it { is_expected.to belong_to :game_frame }
   it { is_expected.to belong_to(:next_frame).class_name('Frame').with_foreign_key('next_frame_id') }
   it { is_expected.to have_many :rolls }
 
-  subject { Frame.create!(game: Game.create!, type: 'Frame') }
+  let(:game) { Game.create! }
+  let(:user) { User.create(name: 'Some') }
+  let(:game_frame) { GameFrame.create!(game: game, user: user) }
+
+  subject { Frame.create!(game_frame: game_frame, type: 'Frame') }
 
   describe "#roll" do
+    it 'does not calls the on_frame_complete callback when frame is active' do
+      called = false
+      on_frame_complete = -> { called = true }
+      subject.roll(1, on_frame_complete: on_frame_complete)
+
+      expect(subject).to be_active
+      expect(called).to be false
+    end
+
+    it 'calls the on_frame_complete callback when frame changes to inactive' do
+      called = false
+      on_frame_complete = -> { called = true }
+
+      subject.roll(1, on_frame_complete: on_frame_complete)
+      subject.roll(1, on_frame_complete: on_frame_complete)
+
+      expect(subject).to_not be_active
+      expect(called).to be true
+    end
+
     context "frame is not active" do
       before { allow(subject).to receive(:active?).and_return(false) }
 
-      it { expect{ subject.roll(1) }.to raise_error(Frame::RollError) }
+      it 'returns a Result::Error instance' do
+        res = subject.roll(1)
+        expect(res).to be_a Result::Error
+        expect(res.error_msg).to be_present
+      end
     end
+
     context "frame is active" do
       before { allow(subject).to receive(:active?).and_return(true) }
 
@@ -20,6 +49,11 @@ RSpec.describe Frame, type: :model do
         expect{ subject.roll(3) }.to change{ subject.rolls.count }.by(1)
 
         expect(subject.rolls.first.pins).to eq 3
+      end
+
+      it 'returns a Result::Success instance' do
+        res = subject.roll(2)
+        expect(res).to be_a Result::Success
       end
     end
   end

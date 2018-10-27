@@ -1,23 +1,31 @@
 class GameFactory
-  MAX_FRAMES_SIZE = 10
+  EmptyUsersError = Class.new(StandardError)
 
-  def self.create!
+  def self.create!(users)
     ApplicationRecord.transaction do
-      Game.create!.tap do |game|
-        # first frame
-        previous_frame = NormalFrame.create!(game: game)
+      users = create_users!(users)
+      return false if users.blank?
 
-        (MAX_FRAMES_SIZE - 1).times do |i|
-          new_frame = if i == MAX_FRAMES_SIZE - 2
-                        LastFrame.create!(game: game)
-                      else
-                        NormalFrame.create!(game: game)
-                      end
+      game = Game.create!
 
-          previous_frame.update!(next_frame: new_frame)
-          previous_frame = new_frame
-        end
+      users.each do |user|
+        game.create_game_frames!(user)
       end
+
+      game
+    end
+    # ;)
+  rescue => _ex
+    return false
+  end
+
+  # Not sure if we need to check the maximum allowed users count
+  #
+  def self.create_users!(users)
+    users.map do |user|
+      User.create!(name: user[:name])
     end
   end
+
+  private_class_method :create_users!
 end

@@ -1,7 +1,9 @@
 require "rails_helper"
 
 describe Game, type: :model do
-  subject { GameFactory.create! }
+  let(:user) { User.find_by_name!('John') }
+  let(:users) { [{ name: 'John' }] }
+  subject { GameFactory.create!(users) }
 
   def roll_all(times:, pins:)
     0.upto(times - 1) { subject.roll(pins) }
@@ -16,14 +18,30 @@ describe Game, type: :model do
     subject.roll(5)
   end
 
-  it { is_expected.to have_many :frames }
-
   describe "#score" do
+    context "multiple players" do
+      let(:john) { User.find_by_name!('John') }
+      let(:mike) { User.find_by_name!('Mike') }
+      let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
+
+      it 'returns the correct score for a given user' do
+        # First user
+        subject.roll(10)
+
+        # 2nd user
+        subject.roll(3)
+        subject.roll(4)
+
+        expect(subject.score(john)).to eq 10
+        expect(subject.score(mike)).to eq 7
+      end
+    end
+
     context "player scores 2 pins in all frames" do
       before { roll_all(times: 20, pins: 2) }
 
-      it "returns the correct total score" do
-        expect(subject.score).to eq 40
+      it "returns the correct total score for the given user" do
+        expect(subject.score(user)).to eq 40
       end
     end
 
@@ -37,7 +55,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score).to eq 28
+        expect(subject.score(user)).to eq 28
       end
     end
 
@@ -51,7 +69,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score).to eq 33
+        expect(subject.score(user)).to eq 33
       end
     end
 
@@ -59,8 +77,136 @@ describe Game, type: :model do
       before { roll_all(times: 12, pins: 10) }
 
       it "returns the correct total score" do
-        expect(subject.score).to eq 300
+        expect(subject.score(user)).to eq 300
       end
+    end
+  end
+
+  describe '#roll' do
+    it 'returns a Result::Error when the user completes his game' do
+      roll_all(times: 20, pins: 0)
+
+      res = subject.roll(1)
+      expect(res).to be_a Result::Error
+    end
+
+    it 'returns a Result::Success instance on a successful roll' do
+      res = subject.roll(2)
+      expect(res).to be_a Result::Success
+      expect(res.data).to eq subject
+    end
+
+    context 'when no current active frames exist' do
+      subject { Game.new }
+      before { expect(subject.game_frames).to be_empty }
+
+      it 'returns a Result::Error instance' do
+        res = subject.roll(1)
+        expect(res).to be_a Result::Error
+      end
+    end
+
+    context 'when a current active frame exists with one user' do
+      it 'rolls for the current user' do
+        subject.roll(3)
+        subject.roll(3)
+
+        subject.roll(10)
+        subject.roll(10)
+
+        frames = subject.game_frames[0].frames
+        expect(frames[0].rolls.count).to eq 2
+        expect(frames[1].rolls.count).to eq 1
+        expect(frames[2].rolls.count).to eq 1
+      end
+    end
+
+    context 'when a current active frame exists with multiple users' do
+      let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
+      subject { GameFactory.create!(users) }
+
+      it 'rolls for the correct user turn' do
+        subject.roll(3)
+        subject.roll(3)
+        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
+        expect(subject.game_frames[1].frames[0].rolls.count).to eq 0
+
+        subject.roll(3)
+        subject.roll(3)
+        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
+        expect(subject.game_frames[1].frames[0].rolls.count).to eq 2
+      end
+    end
+
+    context 'multiple users complete the game' do
+      let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
+      subject { GameFactory.create!(users) }
+
+      it 'has the correct score for all of them' do
+        roll_all(times: 40, pins: 2)
+
+        user_1 = User.find_by_name!('AP')
+        user_2 = User.find_by_name!('LP')
+
+        expect(subject.score(user_1)).to eq 40
+        expect(subject.score(user_2)).to eq 40
+      end
+    end
+  end
+
+  describe '#completed?' do
+    let(:users) { [{name: "a"}] }
+    it 'returns playing when game is not completed' do
+      game = Game.new
+      expect(game).to_not be_completed
+    end
+
+    it 'returns completed when game is completed' do
+      roll_all(times: 20, pins: 0)
+      expect(subject).to be_completed
+    end
+  end
+
+  describe '#winner' do
+    let(:game) { Game.new }
+
+    it 'returns nil for non completed game' do
+      allow(game).to receive(:completed?).and_return(false)
+      expect(game.winner).to eq nil
+    end
+
+    it 'returns the winner for a completed game' do
+      user_1 = User.new(name: 'better next time')
+      user_2 = User.new(name: 'winner')
+      players = [user_1, user_2]
+
+      allow(game).to receive(:completed?).and_return(true)
+      allow(game).to receive(:players).and_return(players)
+      allow(game).to receive(:score).with(user_1).and_return(120)
+      allow(game).to receive(:score).with(user_2).and_return(222)
+
+      expect(game.winner).to eq user_2.name
+    end
+  end
+
+  describe '#create_game_frames!' do
+    pending
+  end
+
+  describe '#current_player' do
+    let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
+
+    subject { GameFactory.create!(users) }
+
+    it 'returns the current active player' do
+      expect(subject.current_player).to eq subject.game_frames[0].user
+    end
+
+    it 'returns the next player when the current user rolls 2 times' do
+      subject.roll(1)
+      expect(subject.current_player).to eq subject.game_frames[0].user
+      subject.roll(2)
+      expect(subject.current_player).to eq subject.game_frames[1].user
     end
   end
 end
