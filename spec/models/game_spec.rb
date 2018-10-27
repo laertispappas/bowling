@@ -154,16 +154,38 @@ describe Game, type: :model do
     end
   end
 
-  describe 'status' do
+  describe '#completed?' do
     let(:users) { [{name: "a"}] }
     it 'returns playing when game is not completed' do
       game = Game.new
-      expect(game.status).to eq 'playing'
+      expect(game).to_not be_completed
     end
 
     it 'returns completed when game is completed' do
       roll_all(times: 20, pins: 0)
-      expect(subject.status).to eq 'completed'
+      expect(subject).to be_completed
+    end
+  end
+
+  describe '#winner' do
+    let(:game) { Game.new }
+
+    it 'returns nil for non completed game' do
+      allow(game).to receive(:completed?).and_return(false)
+      expect(game.winner).to eq nil
+    end
+
+    it 'returns the winner for a completed game' do
+      user_1 = User.new(name: 'better next time')
+      user_2 = User.new(name: 'winner')
+      players = [user_1, user_2]
+
+      allow(game).to receive(:completed?).and_return(true)
+      allow(game).to receive(:players).and_return(players)
+      allow(game).to receive(:score).with(user_1).and_return(120)
+      allow(game).to receive(:score).with(user_2).and_return(222)
+
+      expect(game.winner).to eq user_2.name
     end
   end
 

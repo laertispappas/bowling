@@ -65,15 +65,19 @@ class Game < ApplicationRecord
     current_active_game_frame&.frames&.find(&:active?)
   end
 
-  def status
-    completed? && 'completed' || 'playing'
-  end
-
-  private
-
   def completed?
     !game_frames.all?(&:active?)
   end
+
+  def winner
+    return unless completed?
+
+    players.map { |user| [user.name, score(user)] }
+      .max_by { |_name, score| score }
+      .first
+  end
+
+  private
 
   def current_active_game_frame
     game_frames.find_by(active: true)

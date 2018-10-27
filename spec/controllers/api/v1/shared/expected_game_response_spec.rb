@@ -2,12 +2,13 @@ RSpec.shared_examples "game response" do
   it "has the correct hame response payload" do
     game = Game.find(payload["id"])
 
-    expect(payload["current_player"]).to eq game.current_player.id if game.status != 'completed'
-    expect(payload["current_player"]).to eq nil if game.status == 'complete'
+    expect(payload["current_player"]).to eq game.current_player.id unless game.completed?
+    expect(payload["current_player"]).to eq nil if game.completed?
 
-    expect(payload["current_frame"]).to eq game.current_active_frame.id if game.status != 'completed'
-    expect(payload["current_frame"]).to eq nil if game.status == 'complete'
-    expect(payload["status"]).to eq game.status
+    expect(payload["current_frame"]).to eq game.current_active_frame.id unless game.completed?
+    expect(payload["current_frame"]).to eq nil if game.completed?
+    expect(payload["completed"]).to eq game.completed?
+    expect(payload["winner"]).to eq game.winner
 
     players = payload["players"]
     expect(players.size).to eq game.game_frames.size
