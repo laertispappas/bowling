@@ -12,11 +12,32 @@ RSpec.describe Frame, type: :model do
   subject { Frame.create!(game_frame: game_frame, type: 'Frame') }
 
   describe "#roll" do
+    it 'does not calls the on_frame_complete callback when frame is active' do
+      called = false
+      on_frame_complete = -> { called = true }
+      subject.roll(1, on_frame_complete: on_frame_complete)
+
+      expect(subject).to be_active
+      expect(called).to be false
+    end
+
+    it 'calls the on_frame_complete callback when frame changes to inactive' do
+      called = false
+      on_frame_complete = -> { called = true }
+
+      subject.roll(1, on_frame_complete: on_frame_complete)
+      subject.roll(1, on_frame_complete: on_frame_complete)
+
+      expect(subject).to_not be_active
+      expect(called).to be true
+    end
+
     context "frame is not active" do
       before { allow(subject).to receive(:active?).and_return(false) }
 
       it { expect{ subject.roll(1) }.to raise_error(Frame::RollError) }
     end
+
     context "frame is active" do
       before { allow(subject).to receive(:active?).and_return(true) }
 
