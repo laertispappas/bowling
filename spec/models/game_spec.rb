@@ -62,4 +62,68 @@ describe Game, type: :model do
       end
     end
   end
+
+  describe '#rolls' do
+    context 'when no current active frames exist' do
+      subject { Game.new }
+      before { expect(subject.game_frames).to be_empty }
+
+      it 'should raise an error' do
+        expect{ subject.roll(1) }.to raise_error(Game::GameCompleteError)
+      end
+    end
+
+    context 'when a current active frame exists with one user' do
+      it 'rolls for the current user' do
+        subject.roll(3)
+        subject.roll(3)
+
+        subject.roll(10)
+        subject.roll(10)
+
+        frames = subject.game_frames[0].frames
+        expect(frames[0].rolls.count).to eq 2
+        expect(frames[1].rolls.count).to eq 1
+        expect(frames[2].rolls.count).to eq 1
+      end
+    end
+
+    context 'when a current active frame exists with multiple users' do
+      let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
+      subject { GameFactory.create!(users) }
+
+      it 'rolls for the correct user turn' do
+        subject.roll(3)
+        subject.roll(3)
+        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
+        expect(subject.game_frames[1].frames[0].rolls.count).to eq 0
+
+        subject.roll(3)
+        subject.roll(3)
+        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
+        expect(subject.game_frames[1].frames[0].rolls.count).to eq 2
+      end
+    end
+  end
+
+  describe '#create_game_frames!' do
+    pending
+  end
+
+  describe '#current_player' do
+    let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
+
+    subject { GameFactory.create!(users) }
+
+    it 'returns the current active player' do
+      expect(subject.current_player).to eq subject.game_frames[0].user
+    end
+
+    it 'returns the next player when the current user rolls 2 times' do
+      subject.roll(1)
+      expect(subject.current_player).to eq subject.game_frames[0].user
+      subject.roll(2)
+      expect(subject.current_player).to eq subject.game_frames[1].user
+    end
+  end
 end

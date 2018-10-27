@@ -78,7 +78,8 @@ CREATE TABLE game_frames (
     id bigint NOT NULL,
     game_id bigint NOT NULL,
     user_id bigint NOT NULL,
-    active boolean DEFAULT false NOT NULL
+    active boolean DEFAULT false NOT NULL,
+    next_game_frame_id bigint
 );
 
 
@@ -341,6 +342,14 @@ ALTER TABLE ONLY frames
 
 
 --
+-- Name: game_frames fk_rails_ea0dc6d5d5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY game_frames
+    ADD CONSTRAINT fk_rails_ea0dc6d5d5 FOREIGN KEY (next_game_frame_id) REFERENCES game_frames(id);
+
+
+--
 -- Name: rolls fk_rails_f09717ac94; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -373,6 +382,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181026124645'),
 ('20181026131929'),
 ('20181026154405'),
-('20181026164356');
+('20181026164356'),
+('20181027083323');
 
 

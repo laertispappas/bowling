@@ -8,6 +8,9 @@ module Api
         @payload ||= JSON.parse(response.body)
       end
 
+      # Not huge fun of loops in specs. But I will keep them for now
+      # 
+      #
       def assert_game_response
         game = Game.find(payload["id"])
         expect(payload["current_player"]).to eq game.current_player.id
@@ -16,20 +19,14 @@ module Api
         expect(players[0]["id"]).to eq game.game_frames[0].user.id
         expect(players.size).to eq game.game_frames.size
 
-        frames = players[0]["frames"]
-        expect(frames.size).to eq 10
-        0.upto(9) do |i|
-          frame = game.game_frames[0].frames[i]
-          expect(frames[i]["score"]).to eq(frame.score)
-          expect(frames[i]["rolls"]).to eq(frame.rolls.map { |r| r.score })
-        end
-
-        frames = players[1]["frames"]
-        expect(players[1]["id"]).to eq game.game_frames[1].user.id
-        expect(frames.size).to eq 10
-        0.upto(9) do |i|
-          expect(frames[i]["score"]).to be_zero
-          expect(frames[i]["rolls"]).to be_empty
+        game.game_frames.size.times do |gf_index|
+          frames = players[gf_index]["frames"]
+          expect(frames.size).to eq 10
+          0.upto(9) do |f_index|
+            persisted_frame = game.game_frames[gf_index].frames[f_index]
+            expect(frames[f_index]["score"]).to eq(persisted_frame.score)
+            expect(frames[f_index]["rolls"]).to eq(persisted_frame.rolls.map { |r| r.score })
+          end
         end
       end
 

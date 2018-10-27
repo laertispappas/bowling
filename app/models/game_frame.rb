@@ -2,9 +2,10 @@ class GameFrame < ApplicationRecord
   MAX_FRAMES_SIZE = 10
   MaximumFramesReachedError = Class.new(StandardError)
 
+  has_many :frames
   belongs_to :game
   belongs_to :user
-  has_many :frames
+  belongs_to :next_game_frame, optional: true, class_name: 'GameFrame', foreign_key: :next_game_frame_id
 
   def add_frames!
     current_total_frames = frames.count
