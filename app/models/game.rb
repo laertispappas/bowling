@@ -23,7 +23,7 @@ class Game < ApplicationRecord
   end
 
   def roll(pins)
-    raise GameCompleteError, 'Game has finished' unless current_player_game_frame.present?
+    raise GameCompleteError, 'Game has finished' unless current_active_game_frame.present?
 
     current_active_frame.roll(pins, on_frame_complete: OnFrameCompleted.new(self))
   end
@@ -39,16 +39,16 @@ class Game < ApplicationRecord
   end
 
   def current_player
-    current_player_game_frame.user
+    current_active_game_frame.user
   end
 
   private
 
   def current_active_frame
-    current_player_game_frame.frames.find(&:active?)
+    current_active_game_frame.frames.find(&:active?)
   end
 
-  def current_player_game_frame
+  def current_active_game_frame
     game_frames.find_by(active: true)
   end
 
