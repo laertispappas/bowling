@@ -19,6 +19,10 @@ class Game < ApplicationRecord
       .add_frames!
   end
 
+  def current_player
+    current_player_game_frame.user
+  end
+
   private
 
   def current_active_frame
