@@ -25,4 +25,8 @@ class GameFrame < ApplicationRecord
     previous_frame&.update!(next_frame: new_frame)
     add_frames!
   end
+
+  def active?
+    frames.any?(&:active?)
+  end
 end

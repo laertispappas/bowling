@@ -2,7 +2,9 @@ class GameSerializer < BaseSerializer
   def as_json(_opts = {})
     {
       id: object.id,
-      current_player: object.current_player.id,
+      current_player: object.current_player&.id,
+      current_frame: object.current_active_frame&.id,
+      status: object.status,
       players: object.game_frames.map { |gf| GameFrameSerializer.new(gf) }
     }
   end

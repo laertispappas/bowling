@@ -34,6 +34,19 @@ module Api
           include_examples "game response"
           it { expect(response.status).to eq 200 }
         end
+
+        context 'a completed game' do
+          let(:users) { [{ name: "me" }] }
+
+          before do
+            1.upto(20) { game.roll(2) }
+            get "/api/v1/games/#{game.id}"
+          end
+
+          include_examples "game response"
+
+          it { expect(response.status).to eq 200 }
+        end
       end
 
       describe 'POST /api/v1/games' do

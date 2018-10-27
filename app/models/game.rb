@@ -8,6 +8,8 @@ class Game < ApplicationRecord
            source: :user
 
   class OnFrameCompleted
+    delegate :current_player, to: :game
+
     # Keep current active game frame in sync
     #
     attr_reader :game
@@ -16,14 +18,16 @@ class Game < ApplicationRecord
     end
 
     def call
-      next_game_frame = game.current_player.game_frame.next_game_frame
+      current_player_frame = game.current_player.game_frame
+      next_game_frame = current_player_frame.next_game_frame
+
       if next_game_frame.present?
         game.current_player.game_frame.update!(active: false)
         next_game_frame.update!(active: true)
       end
 
       # all frames completed for the current user
-      unless game.current_player.game_frame.frames.any?(&:active?)
+      unless current_player.game_frame.active?
         game.current_player.game_frame.update!(active: false)
       end
     end
@@ -54,14 +58,22 @@ class Game < ApplicationRecord
   end
 
   def current_player
-    current_active_game_frame.user
+    current_active_game_frame&.user
   end
 
   def current_active_frame
-    current_active_game_frame.frames.find(&:active?)
+    current_active_game_frame&.frames&.find(&:active?)
+  end
+
+  def status
+    completed? && 'completed' || 'playing'
   end
 
   private
+
+  def completed?
+    !game_frames.all?(&:active?)
+  end
 
   def current_active_game_frame
     game_frames.find_by(active: true)
@@ -73,5 +85,16 @@ class Game < ApplicationRecord
       previous.update!(next_game_frame: next_game_frame)
       previous = next_game_frame
     end
+
+    # cyclic list only if we have more than 1 users
+    if multiple_players?
+      last = game_frames[-1]
+      last.next_game_frame = game_frames[0]
+      last.save!
+    end
+  end
+
+  def multiple_players?
+    game_frames.size > 1
   end
 end

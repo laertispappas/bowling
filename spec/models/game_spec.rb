@@ -137,6 +137,34 @@ describe Game, type: :model do
         expect(subject.game_frames[1].frames[0].rolls.count).to eq 2
       end
     end
+
+    context 'multiple users complete the game' do
+      let(:users) { [{ name: 'AP' }, { name: 'LP' }] }
+      subject { GameFactory.create!(users) }
+
+      it 'has the correct score for all of them' do
+        roll_all(times: 40, pins: 2)
+
+        user_1 = User.find_by_name!('AP')
+        user_2 = User.find_by_name!('LP')
+
+        expect(subject.score(user_1)).to eq 40
+        expect(subject.score(user_2)).to eq 40
+      end
+    end
+  end
+
+  describe 'status' do
+    let(:users) { [{name: "a"}] }
+    it 'returns playing when game is not completed' do
+      game = Game.new
+      expect(game.status).to eq 'playing'
+    end
+
+    it 'returns completed when game is completed' do
+      roll_all(times: 20, pins: 0)
+      expect(subject.status).to eq 'completed'
+    end
   end
 
   describe '#create_game_frames!' do
