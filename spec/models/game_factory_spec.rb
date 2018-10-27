@@ -20,8 +20,9 @@ describe GameFactory, type: :model do
       expect(game.game_frames[1].user.name).to eq 'Some'
     end
 
-    it 'game has an initial score of zero for the current turn' do
-      expect(game.score).to be_zero
+    it 'game has an initial score of zero for the user' do
+      expect(game.score(User.first)).to be_zero
+      expect(game.score(User.last)).to be_zero
     end
 
     it 'all frames in a game frame should be 10' do

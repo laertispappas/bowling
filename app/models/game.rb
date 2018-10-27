@@ -14,6 +14,11 @@ class Game < ApplicationRecord
         game.current_player.game_frame.update!(active: false)
         next_game_frame.update!(active: true)
       end
+
+      # all frames completed for the current user
+      unless game.current_player.game_frame.frames.any?(&:active?)
+        game.current_player.game_frame.update!(active: false)
+      end
     end
   end
 
@@ -23,8 +28,8 @@ class Game < ApplicationRecord
     current_active_frame.roll(pins, on_frame_complete: OnFrameCompleted.new(self))
   end
 
-  def score
-    current_player_game_frame.frames.sum(&:score)
+  def score(user)
+    user.game_frame.score
   end
 
   def create_game_frames!(user)

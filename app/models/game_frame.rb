@@ -7,6 +7,10 @@ class GameFrame < ApplicationRecord
   belongs_to :user
   belongs_to :next_game_frame, optional: true, class_name: 'GameFrame', foreign_key: :next_game_frame_id
 
+  def score
+    frames.sum(&:score)
+  end
+
   def add_frames!
     current_total_frames = frames.count
     return if current_total_frames == MAX_FRAMES_SIZE

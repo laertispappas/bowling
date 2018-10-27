@@ -1,6 +1,7 @@
 require "rails_helper"
 
 describe Game, type: :model do
+  let(:user) { User.find_by_name!('John') }
   let(:users) { [{ name: 'John' }] }
   subject { GameFactory.create!(users) }
 
@@ -18,11 +19,29 @@ describe Game, type: :model do
   end
 
   describe "#score" do
+    context "multiple players" do
+      let(:john) { User.find_by_name!('John') }
+      let(:mike) { User.find_by_name!('Mike') }
+      let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
+
+      it 'returns the correct score for a given user' do
+        # First user
+        subject.roll(10)
+
+        # 2nd user
+        subject.roll(3)
+        subject.roll(4)
+
+        expect(subject.score(john)).to eq 10
+        expect(subject.score(mike)).to eq 7
+      end
+    end
+
     context "player scores 2 pins in all frames" do
       before { roll_all(times: 20, pins: 2) }
 
-      it "returns the correct total score" do
-        expect(subject.score).to eq 40
+      it "returns the correct total score for the given user" do
+        expect(subject.score(user)).to eq 40
       end
     end
 
@@ -36,7 +55,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score).to eq 28
+        expect(subject.score(user)).to eq 28
       end
     end
 
@@ -50,7 +69,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score).to eq 33
+        expect(subject.score(user)).to eq 33
       end
     end
 
@@ -58,12 +77,17 @@ describe Game, type: :model do
       before { roll_all(times: 12, pins: 10) }
 
       it "returns the correct total score" do
-        expect(subject.score).to eq 300
+        expect(subject.score(user)).to eq 300
       end
     end
   end
 
   describe '#rolls' do
+    it 'raises a game complete error when the user completes his game' do
+      roll_all(times: 20, pins: 0)
+      expect{ subject.roll(1) }.to raise_error(Game::GameCompleteError)
+    end
+
     context 'when no current active frames exist' do
       subject { Game.new }
       before { expect(subject.game_frames).to be_empty }
