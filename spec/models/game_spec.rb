@@ -82,18 +82,27 @@ describe Game, type: :model do
     end
   end
 
-  describe '#rolls' do
-    it 'raises a game complete error when the user completes his game' do
+  describe '#roll' do
+    it 'returns a Result::Error when the user completes his game' do
       roll_all(times: 20, pins: 0)
-      expect{ subject.roll(1) }.to raise_error(Game::GameCompleteError)
+
+      res = subject.roll(1)
+      expect(res).to be_a Result::Error
+    end
+
+    it 'returns a Result::Success instance on a successful roll' do
+      res = subject.roll(2)
+      expect(res).to be_a Result::Success
+      expect(res.data).to eq subject
     end
 
     context 'when no current active frames exist' do
       subject { Game.new }
       before { expect(subject.game_frames).to be_empty }
 
-      it 'should raise an error' do
-        expect{ subject.roll(1) }.to raise_error(Game::GameCompleteError)
+      it 'returns a Result::Error instance' do
+        res = subject.roll(1)
+        expect(res).to be_a Result::Error
       end
     end
 

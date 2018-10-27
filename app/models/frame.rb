@@ -9,13 +9,19 @@ class Frame < ApplicationRecord
 
   default_scope { order(id: :asc) }
 
-  def roll(pins, on_frame_complete: -> () { })
+  def roll(pins, on_frame_complete: -> {})
     with_lock do
-      raise RollError, 'Cannot roll on a completed frame' unless active?
-      rolls.create!(pins: pins)
+      return Result::Error.new('Cannot roll on a completed frame') unless active?
 
+      rolls.create!(pins: pins)
       on_frame_complete.call unless active?
+
+      Result::Success.new
     end
+
+    # This is not so good... :)
+  rescue => _ex
+    Result::Error.new(_ex)
   end
 
   def score

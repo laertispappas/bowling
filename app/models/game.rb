@@ -8,6 +8,8 @@ class Game < ApplicationRecord
            source: :user
 
   class OnFrameCompleted
+    # Keep current active game frame in sync
+    #
     attr_reader :game
     def initialize(game)
       @game = game
@@ -28,10 +30,16 @@ class Game < ApplicationRecord
   end
 
   def roll(pins)
-    raise GameCompleteError, 'Game has finished' unless current_active_game_frame.present?
+    unless current_active_game_frame.present?
+      return Result::Error.new('Game has finished')
+    end
 
     current_active_frame.with_lock do
-      current_active_frame.roll(pins, on_frame_complete: OnFrameCompleted.new(self))
+      current_active_frame
+        .roll(pins, on_frame_complete: OnFrameCompleted.new(self))
+        .and_then do |_data|
+          Result::Success.new(self)
+        end
     end
   end
 

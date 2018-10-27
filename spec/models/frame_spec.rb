@@ -35,7 +35,11 @@ RSpec.describe Frame, type: :model do
     context "frame is not active" do
       before { allow(subject).to receive(:active?).and_return(false) }
 
-      it { expect{ subject.roll(1) }.to raise_error(Frame::RollError) }
+      it 'returns a Result::Error instance' do
+        res = subject.roll(1)
+        expect(res).to be_a Result::Error
+        expect(res.error_msg).to be_present
+      end
     end
 
     context "frame is active" do
@@ -45,6 +49,11 @@ RSpec.describe Frame, type: :model do
         expect{ subject.roll(3) }.to change{ subject.rolls.count }.by(1)
 
         expect(subject.rolls.first.pins).to eq 3
+      end
+
+      it 'returns a Result::Success instance' do
+        res = subject.roll(2)
+        expect(res).to be_a Result::Success
       end
     end
   end

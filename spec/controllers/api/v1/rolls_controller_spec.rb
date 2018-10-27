@@ -40,7 +40,17 @@ module Api
       end
 
       context 'on invalid params' do
-        pending
+        let(:params) do
+          {
+            pins: -12
+          }
+        end
+
+        it 'responds with the correct http status and payload' do
+          do_request
+          expect(response.status).to eq 400
+          expect(payload["message"]).to be_present
+        end
       end
 
       context 'on wrong user roll' do
