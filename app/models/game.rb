@@ -31,11 +31,9 @@ class Game < ApplicationRecord
   end
 
   def roll(pins)
-    unless current_active_game_frame.present?
-      return Result::Error.new('Game has finished')
-    end
+    with_lock do
+      return Result::Error.new('Game has finished') if completed?
 
-    current_active_frame.with_lock do
       current_active_frame
         .roll(pins, on_frame_complete: OnFrameCompleted.new(current_active_game_frame))
         .and_then do |_data|
@@ -59,7 +57,7 @@ class Game < ApplicationRecord
   end
 
   def current_active_frame
-    current_active_game_frame&.frames&.find(&:active?)
+    current_active_game_frame&.active_frame
   end
 
   def completed?
@@ -77,7 +75,7 @@ class Game < ApplicationRecord
   private
 
   def current_active_game_frame
-    game_frames.find_by(active: true)
+    game_frames.select(&:active?).first
   end
 
   def link_game_frames!

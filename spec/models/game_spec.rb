@@ -164,7 +164,7 @@ describe Game, type: :model do
     end
 
     it 'returns true when game is completed' do
-      roll_all(times: 20, pins: 0)
+      roll_all(times: 20, pins: 2)
       expect(subject).to be_completed
     end
   end
@@ -208,7 +208,7 @@ describe Game, type: :model do
       subject.roll(1)
       expect(subject.current_player).to eq subject.game_frames[0].user
       subject.roll(2)
-      expect(subject.current_player).to eq subject.game_frames[1].user
+      expect(subject.reload.current_player).to eq subject.game_frames[1].user
     end
   end
 end

@@ -49,6 +49,6 @@ class Frame < ApplicationRecord
   end
 
   def more_rolls?
-    rolls.empty? || rolls.size < MAX_ROLLS_COUNT
+    rolls.size < MAX_ROLLS_COUNT
   end
 end

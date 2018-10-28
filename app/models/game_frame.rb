@@ -12,6 +12,10 @@ class GameFrame < ApplicationRecord
     frames.sum(&:score)
   end
 
+  def active_frame
+    frames.find(&:active?)
+  end
+
   def add_frames!
     current_total_frames = frames.count
     return if current_total_frames == MAX_FRAMES_SIZE

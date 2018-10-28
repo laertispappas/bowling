@@ -18,7 +18,7 @@ module Api
       private
 
       def game
-        @game ||= Game.find params[:game_id]
+        @game ||= Game.includes(:players, game_frames: [frames: :rolls]).find params[:game_id]
       end
 
       def create_params
