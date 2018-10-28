@@ -5,7 +5,7 @@ class Frame < ApplicationRecord
 
   belongs_to :user
   belongs_to :next_frame, class_name: 'Frame', foreign_key: :next_frame_id, optional: true
-  has_many :rolls
+  has_many :rolls, dependent: :destroy
 
   # We need an index column here but for now primary keys will work for now
   #

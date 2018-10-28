@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   MAX_FRAMES_SIZE = 10
 
-  has_many :frames
+  has_many :frames, dependent: :destroy
   belongs_to :game
 
   validates_presence_of :name

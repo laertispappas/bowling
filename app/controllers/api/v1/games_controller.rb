@@ -3,7 +3,10 @@ module Api
     class GamesController < ApplicationController
       def show
         game = Game.includes(players: [frames: :rolls]).find(params[:id])
-        render json: GameSerializer.new(game).as_json
+
+        if stale?(game)
+          render json: GameSerializer.new(game).as_json
+        end
       end
 
       def create

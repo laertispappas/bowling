@@ -14,7 +14,41 @@ module Api
 
           include_examples "game response"
 
-          it { expect(response.status).to eq 200 }
+          context 'requesting the game with If-None-Match specified in the header' do
+            let(:do_request) do
+              get "/api/v1/games/#{game.id}", headers: { 'If-None-Match' => etag_value }
+            end
+
+            context 'with an ETag mismatch' do
+              before { do_request }
+
+              let(:etag_value) { 'expired' }
+
+              it { expect(response.status).to eq 200 }
+              it { expect(payload).to be_present }
+            end
+
+            context 'with a matched ETag specified' do
+              before { do_request }
+
+              let(:etag_value) { response.headers['ETag'] }
+
+              it { expect(response.status).to eq 304 }
+              it { expect(response.body).to be_empty }
+            end
+
+            context 'when the game is updated' do
+              before do
+                game.roll(2)
+                do_request
+              end
+
+              let(:etag_value) { response.headers['ETag'] }
+
+              it { expect(response.status).to eq 200 }
+              it { expect(payload).to be_present }
+            end
+          end
         end
 
         context 'with user rolls' do

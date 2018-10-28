@@ -1,6 +1,7 @@
 class Game < ApplicationRecord
   has_many :players,
-           class_name: 'User'
+           class_name: 'User',
+           dependent: :destroy
 
   # See RollAuthorizer comment for the interface here.
   def roll(pins)
@@ -8,6 +9,7 @@ class Game < ApplicationRecord
       return Result::Error.new('Game has finished') if completed?
 
       current_player.roll(pins).and_then do
+        touch
         Result::Success.new(self)
       end
     end

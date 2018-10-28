@@ -75,7 +75,9 @@ ALTER SEQUENCE frames_id_seq OWNED BY frames.id;
 --
 
 CREATE TABLE games (
-    id bigint NOT NULL
+    id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -303,6 +305,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181027083323'),
 ('20181028110634'),
 ('20181028111339'),
-('20181028111454');
+('20181028111454'),
+('20181028140045');
 
 
