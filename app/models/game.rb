@@ -2,6 +2,10 @@ class Game < ApplicationRecord
   has_many :players,
            class_name: 'User'
 
+  def score(user)
+    user.score
+  end
+
   def roll(pins)
     with_lock do
       return Result::Error.new('Game has finished') if completed?
@@ -10,10 +14,6 @@ class Game < ApplicationRecord
         Result::Success.new(self)
       end
     end
-  end
-
-  def score(user)
-    user.score
   end
 
   def current_player

@@ -10,7 +10,7 @@ class GameFactory
 
       raise ActiveRecord::Rollback if users.blank?
 
-      users.each(&:create_frames!)
+      users.each(&method(:create_frames!))
     end
     game
   rescue ActiveRecord::RecordInvalid => _ex
@@ -26,4 +26,20 @@ class GameFactory
   end
 
   private_class_method :create_users!
+
+  def self.create_frames!(user)
+    current_total_frames = user.frames.count
+    return if current_total_frames == User::MAX_FRAMES_SIZE
+
+    previous_frame = user.frames.last
+    new_frame = if current_total_frames == User::MAX_FRAMES_SIZE - 1
+                  LastFrame.create!(user: user)
+                else
+                  NormalFrame.create(user: user)
+                end
+
+    previous_frame&.update!(next_frame: new_frame)
+    create_frames!(user)
+  end
+  private_class_method :create_frames!
 end

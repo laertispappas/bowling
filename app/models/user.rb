@@ -31,21 +31,6 @@ class User < ApplicationRecord
   end
 
   def game_completed?
-    !frames.any?(&:active?)
-  end
-
-  def create_frames!
-    current_total_frames = frames.count
-    return if current_total_frames == MAX_FRAMES_SIZE
-
-    previous_frame = frames.last
-    new_frame = if current_total_frames == MAX_FRAMES_SIZE - 1
-                  LastFrame.create!(user: self)
-                else
-                  NormalFrame.create(user: self)
-                end
-
-    previous_frame&.update!(next_frame: new_frame)
-    create_frames!
+    frames.none?(&:active?)
   end
 end

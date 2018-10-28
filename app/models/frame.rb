@@ -11,6 +11,10 @@ class Frame < ApplicationRecord
   #
   default_scope { order(id: :asc) }
 
+  def score
+    rolls.sum(&:score) + calculate_bonus
+  end
+
   def roll(pins)
     with_lock do
       return Result::Error.new('Cannot roll on a completed frame') unless active?
@@ -24,12 +28,9 @@ class Frame < ApplicationRecord
     Result::Error.new(_ex)
   end
 
-  def score
-    rolls.sum(&:score) + calculate_bonus
-  end
-
   def active?
     return false if strike? || spare?
+
     more_rolls?
   end
 
