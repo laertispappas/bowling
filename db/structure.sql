@@ -47,7 +47,7 @@ CREATE TABLE frames (
     id bigint NOT NULL,
     next_frame_id bigint,
     type character varying NOT NULL,
-    game_frame_id bigint NOT NULL
+    user_id bigint NOT NULL
 );
 
 
@@ -68,38 +68,6 @@ CREATE SEQUENCE frames_id_seq
 --
 
 ALTER SEQUENCE frames_id_seq OWNED BY frames.id;
-
-
---
--- Name: game_frames; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE game_frames (
-    id bigint NOT NULL,
-    game_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    active boolean DEFAULT false NOT NULL,
-    next_game_frame_id bigint
-);
-
-
---
--- Name: game_frames_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE game_frames_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: game_frames_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE game_frames_id_seq OWNED BY game_frames.id;
 
 
 --
@@ -175,7 +143,8 @@ CREATE TABLE schema_migrations (
 
 CREATE TABLE users (
     id bigint NOT NULL,
-    name character varying NOT NULL
+    name character varying NOT NULL,
+    game_id bigint NOT NULL
 );
 
 
@@ -203,13 +172,6 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 --
 
 ALTER TABLE ONLY frames ALTER COLUMN id SET DEFAULT nextval('frames_id_seq'::regclass);
-
-
---
--- Name: game_frames id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY game_frames ALTER COLUMN id SET DEFAULT nextval('game_frames_id_seq'::regclass);
 
 
 --
@@ -250,14 +212,6 @@ ALTER TABLE ONLY frames
 
 
 --
--- Name: game_frames game_frames_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY game_frames
-    ADD CONSTRAINT game_frames_pkey PRIMARY KEY (id);
-
-
---
 -- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -290,27 +244,6 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: index_game_frames_on_game_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_game_frames_on_game_id ON public.game_frames USING btree (game_id);
-
-
---
--- Name: index_game_frames_on_game_id_and_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_game_frames_on_game_id_and_user_id ON public.game_frames USING btree (game_id, user_id);
-
-
---
--- Name: index_game_frames_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_game_frames_on_user_id ON public.game_frames USING btree (user_id);
-
-
---
 -- Name: index_rolls_on_frame_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -318,35 +251,19 @@ CREATE INDEX index_rolls_on_frame_id ON public.rolls USING btree (frame_id);
 
 
 --
--- Name: game_frames fk_rails_467e754d69; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY game_frames
-    ADD CONSTRAINT fk_rails_467e754d69 FOREIGN KEY (game_id) REFERENCES games(id);
-
-
---
--- Name: game_frames fk_rails_7f1664d866; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY game_frames
-    ADD CONSTRAINT fk_rails_7f1664d866 FOREIGN KEY (user_id) REFERENCES users(id);
-
-
---
--- Name: frames fk_rails_951521bb85; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: frames fk_rails_05c08dd6ca; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY frames
-    ADD CONSTRAINT fk_rails_951521bb85 FOREIGN KEY (game_frame_id) REFERENCES game_frames(id);
+    ADD CONSTRAINT fk_rails_05c08dd6ca FOREIGN KEY (user_id) REFERENCES users(id);
 
 
 --
--- Name: game_frames fk_rails_ea0dc6d5d5; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users fk_rails_290b693b7c; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY game_frames
-    ADD CONSTRAINT fk_rails_ea0dc6d5d5 FOREIGN KEY (next_game_frame_id) REFERENCES game_frames(id);
+ALTER TABLE ONLY users
+    ADD CONSTRAINT fk_rails_290b693b7c FOREIGN KEY (game_id) REFERENCES games(id);
 
 
 --
@@ -383,6 +300,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181026131929'),
 ('20181026154405'),
 ('20181026164356'),
-('20181027083323');
+('20181027083323'),
+('20181028110634'),
+('20181028111339'),
+('20181028111454');
 
 

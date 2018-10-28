@@ -3,18 +3,19 @@ class Frame < ApplicationRecord
   MAX_ROLLS_COUNT = 2
   RollError = Class.new(StandardError)
 
-  belongs_to :game_frame
+  belongs_to :user
   belongs_to :next_frame, class_name: 'Frame', foreign_key: :next_frame_id, optional: true
   has_many :rolls
 
+  # We need an index column here but for now primary keys will work for now
+  #
   default_scope { order(id: :asc) }
 
-  def roll(pins, on_frame_complete: -> {})
+  def roll(pins)
     with_lock do
       return Result::Error.new('Cannot roll on a completed frame') unless active?
 
       rolls.create!(pins: pins)
-      on_frame_complete.call unless active?
 
       Result::Success.new
     end

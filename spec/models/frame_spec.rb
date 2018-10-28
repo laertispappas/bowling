@@ -1,37 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Frame, type: :model do
-  it { is_expected.to belong_to :game_frame }
   it { is_expected.to belong_to(:next_frame).class_name('Frame').with_foreign_key('next_frame_id') }
   it { is_expected.to have_many :rolls }
 
   let(:game) { Game.create! }
-  let(:user) { User.create(name: 'Some') }
-  let(:game_frame) { GameFrame.create!(game: game, user: user) }
+  let(:user) { User.create(name: 'Some', game: game) }
 
-  subject { Frame.create!(game_frame: game_frame, type: 'Frame') }
+  subject { Frame.create!(user: user, type: 'Frame') }
 
   describe "#roll" do
-    it 'does not calls the on_frame_complete callback when frame is active' do
-      called = false
-      on_frame_complete = -> { called = true }
-      subject.roll(1, on_frame_complete: on_frame_complete)
-
-      expect(subject).to be_active
-      expect(called).to be false
-    end
-
-    it 'calls the on_frame_complete callback when frame changes to inactive' do
-      called = false
-      on_frame_complete = -> { called = true }
-
-      subject.roll(1, on_frame_complete: on_frame_complete)
-      subject.roll(1, on_frame_complete: on_frame_complete)
-
-      expect(subject).to_not be_active
-      expect(called).to be true
-    end
-
     context "frame is not active" do
       before { allow(subject).to receive(:active?).and_return(false) }
 
