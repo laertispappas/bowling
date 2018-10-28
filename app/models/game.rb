@@ -32,9 +32,7 @@ class Game < ApplicationRecord
   def winner
     return unless completed?
 
-    players.map { |user| [user.name, user.score] }
-      .max_by { |_name, score| score }
-      .first
+    players.max_by(&:score).name
   end
 
   private
