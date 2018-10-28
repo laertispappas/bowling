@@ -6,7 +6,7 @@
 
 Navigate to root directory (`bowling`) and run:
 
-* `docker-compose up --build` This will run a postgresql db and the app as docker containers
+* `docker-compose up --build` This will run a postgresql db and the api as docker containers
 
 ## Api
 
