@@ -97,8 +97,9 @@ describe Game, type: :model do
     end
 
     context 'when no current active frames exist' do
-      subject { Game.new }
-      before { expect(subject.game_frames).to be_empty }
+      before do
+        roll_all(times: 20, pins: 2)
+      end
 
       it 'returns a Result::Error instance' do
         res = subject.roll(1)
@@ -114,7 +115,7 @@ describe Game, type: :model do
         subject.roll(10)
         subject.roll(10)
 
-        frames = subject.game_frames[0].frames
+        frames = subject.players[0].frames
         expect(frames[0].rolls.count).to eq 2
         expect(frames[1].rolls.count).to eq 1
         expect(frames[2].rolls.count).to eq 1
@@ -128,13 +129,13 @@ describe Game, type: :model do
       it 'rolls for the correct user turn' do
         subject.roll(3)
         subject.roll(3)
-        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
-        expect(subject.game_frames[1].frames[0].rolls.count).to eq 0
+        expect(subject.players[0].frames[0].rolls.count).to eq 2
+        expect(subject.players[1].frames[0].rolls.count).to eq 0
 
         subject.roll(3)
         subject.roll(3)
-        expect(subject.game_frames[0].frames[0].rolls.count).to eq 2
-        expect(subject.game_frames[1].frames[0].rolls.count).to eq 2
+        expect(subject.players[0].frames[0].rolls.count).to eq 2
+        expect(subject.players[1].frames[0].rolls.count).to eq 2
       end
     end
 
@@ -156,10 +157,11 @@ describe Game, type: :model do
 
   describe '#completed?' do
     let(:users) { [{name: "a"}] }
+
     it 'returns false when game is not completed' do
       game = Game.new
-      game.game_frames.new
-      game.game_frames.first.frames.new
+      game.players.new
+      game.players.first.frames.new
       expect(game).to_not be_completed
     end
 
@@ -191,24 +193,26 @@ describe Game, type: :model do
     end
   end
 
-  describe '#create_game_frames!' do
-    pending
-  end
-
   describe '#current_player' do
     let(:users) { [{ name: 'John' }, { name: 'Mike' }] }
 
     subject { GameFactory.create(users) }
 
     it 'returns the current active player' do
-      expect(subject.current_player).to eq subject.game_frames[0].user
+      expect(subject.current_player).to eq subject.players[0]
     end
 
-    it 'returns the next player when the current user rolls 2 times' do
+    it 'returns the correct current player' do
       subject.roll(1)
-      expect(subject.current_player).to eq subject.game_frames[0].user
+      expect(subject.current_player).to eq subject.players[0]
       subject.roll(2)
-      expect(subject.reload.current_player).to eq subject.game_frames[1].user
+      expect(subject.current_player).to eq subject.players[1]
+
+      subject.roll(10)
+      expect(subject.current_player).to eq subject.players[0]
+
+      subject.roll(10)
+      expect(subject.current_player).to eq subject.players[1]
     end
   end
 end

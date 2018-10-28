@@ -5,7 +5,7 @@ describe NormalFrame, type: :model do
 
   let(:game) { GameFactory.create([{ name: 'Ruby' }]) }
 
-  subject { game.game_frames[0].frames.first }
+  subject { game.players[0].frames.first }
 
   describe "#score" do
     context "current frame does not roll a spare nor a strike" do
@@ -101,7 +101,7 @@ describe NormalFrame, type: :model do
 
       context "next frame is a strike and the last frame of the game" do
         before do
-          subject.next_frame = game.game_frames[0].frames.last
+          subject.next_frame = game.players[0].frames.last
           subject.save!
           subject.next_frame.roll(10)
         end

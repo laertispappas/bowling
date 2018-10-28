@@ -2,27 +2,26 @@ class GameFactory
   EmptyUsersError = Class.new(StandardError)
 
   def self.create(users)
+    game = Game.new
     ApplicationRecord.transaction do
-      users = create_users!(users)
-      return false if users.blank?
+      game.save!
 
-      game = Game.create!
+      users = create_users!(users, game)
 
-      users.each do |user|
-        game.create_game_frames!(user)
-      end
+      raise ActiveRecord::Rollback if users.blank?
 
-      game
+      users.each(&:create_frames!)
     end
+    game
   rescue ActiveRecord::RecordInvalid => _ex
-    return false
+    game
   end
 
   # Not sure if we need to check the maximum allowed users count
   #
-  def self.create_users!(users)
+  def self.create_users!(users, game)
     users.map do |user|
-      User.create!(name: user[:name])
+      User.create!(name: user[:name], game: game)
     end
   end
 

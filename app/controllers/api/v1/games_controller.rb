@@ -2,13 +2,13 @@ module Api
   module V1
     class GamesController < ApplicationController
       def show
-        game = Game.includes(:players, game_frames: [frames: :rolls]).find(params[:id])
+        game = Game.includes(players: [frames: :rolls]).find(params[:id])
         render json: GameSerializer.new(game).as_json
       end
 
       def create
         game = GameFactory.create(create_params)
-        if game
+        if game.persisted?
           render json: GameSerializer.new(game).as_json, status: 201
         else
           render json: { message: 'cannot create game' }, status: 422

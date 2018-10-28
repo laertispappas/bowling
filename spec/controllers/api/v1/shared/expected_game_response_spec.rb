@@ -11,18 +11,18 @@ RSpec.shared_examples "game response" do
     expect(payload["winner"]).to eq game.winner
 
     players = payload["players"]
-    expect(players.size).to eq game.game_frames.size
+    expect(players.size).to eq game.players.size
     players.size.times do |player_index|
       user = User.find(players[player_index]["id"])
       expect(players[player_index]["total_score"]).to eq game.score(user)
       expect(players[player_index]["name"]).to eq user.name
     end
 
-    game.game_frames.size.times do |gf_index|
-      frames = payload["players"][gf_index]["frames"]
+    game.players.size.times do |player_index|
+      frames = payload["players"][player_index]["frames"]
       expect(frames.size).to eq 10
       0.upto(9) do |f_index|
-        persisted_frame = game.game_frames[gf_index].frames[f_index]
+        persisted_frame = game.players[player_index].frames[f_index]
         expect(frames[f_index]["score"]).to eq(persisted_frame.score)
         expect(frames[f_index]["rolls"]).to eq(persisted_frame.rolls.map { |r| r.score })
       end

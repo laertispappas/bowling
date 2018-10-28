@@ -13,6 +13,6 @@ class GameSerializer < BaseSerializer
   private
 
   def players
-    object.game_frames.map { |gf| GameFrameSerializer.new(gf) }
+    object.players.map { |user| PlayerSerializer.new(user) }
   end
 end
