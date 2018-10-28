@@ -17,7 +17,7 @@ class Game < ApplicationRecord
   end
 
   def current_player
-    return if players.all?(&:completed?)
+    return if players.all?(&:game_completed?)
 
     players.min_by(&:completed_frames)
   end
@@ -27,7 +27,7 @@ class Game < ApplicationRecord
   end
 
   def completed?
-    players.all?(&:completed?)
+    players.all?(&:game_completed?)
   end
 
   def winner

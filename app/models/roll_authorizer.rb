@@ -17,10 +17,10 @@ class RollAuthorizer
   private
 
   def correct_user_turn?
-    params[:player_id].to_i == game.current_player.id
+    params[:player_id].to_i == game.current_player&.id
   end
 
   def current_frame_slot?
-    params[:frame_id].to_i == game.current_active_frame.id
+    params[:frame_id].to_i == game.current_active_frame&.id
   end
 end

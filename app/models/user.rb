@@ -30,9 +30,7 @@ class User < ApplicationRecord
     frames.size - frames.select(&:active?).size
   end
 
-  # true when the user has completed all his frames
-  #
-  def completed?
+  def game_completed?
     !frames.any?(&:active?)
   end
 
