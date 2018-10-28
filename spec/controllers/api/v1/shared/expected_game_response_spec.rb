@@ -14,7 +14,7 @@ RSpec.shared_examples "game response" do
     expect(players.size).to eq game.players.size
     players.size.times do |player_index|
       user = User.find(players[player_index]["id"])
-      expect(players[player_index]["total_score"]).to eq game.score(user)
+      expect(players[player_index]["total_score"]).to eq user.score
       expect(players[player_index]["name"]).to eq user.name
     end
 

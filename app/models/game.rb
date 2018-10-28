@@ -2,10 +2,7 @@ class Game < ApplicationRecord
   has_many :players,
            class_name: 'User'
 
-  def score(user)
-    user.score
-  end
-
+  # See RollAuthorizer comment for the interface here.
   def roll(pins)
     with_lock do
       return Result::Error.new('Game has finished') if completed?
@@ -33,7 +30,7 @@ class Game < ApplicationRecord
   def winner
     return unless completed?
 
-    players.map { |user| [user.name, score(user)] }
+    players.map { |user| [user.name, user.score] }
       .max_by { |_name, score| score }
       .first
   end

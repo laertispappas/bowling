@@ -4,7 +4,12 @@ RSpec.describe User, type: :model do
   it { is_expected.to validate_presence_of :name }
 
   describe '#score' do
-    it 'returns the same of frames score' do
+    it 'has an initial score of zero for no rolls' do
+      user = User.create!(game: Game.create!, name: 'lP')
+      expect(user.score).to be_zero
+    end
+
+    it 'returns the sum of frames scores' do
       frames = [double(score: 3), double(score: 2), double(score: 4)]
       allow(subject).to receive(:frames).and_return(frames)
 

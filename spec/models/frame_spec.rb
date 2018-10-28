@@ -36,7 +36,6 @@ RSpec.describe Frame, type: :model do
     end
   end
 
-
   describe "#score" do
     it "requires calcualte_bonus to be implemented" do
       expect { subject.score }.to raise_error(NotImplementedError)

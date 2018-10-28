@@ -12,11 +12,6 @@ describe GameFactory, type: :model do
       expect(game.players.count).to eq 2
     end
 
-    it 'game has an initial score of zero for the user' do
-      expect(game.score(User.first)).to be_zero
-      expect(game.score(User.last)).to be_zero
-    end
-
     it 'creates 10 frames for each player' do
       expect(game.players[0].frames.count).to eq 10
       expect(game.players[1].frames.count).to eq 10

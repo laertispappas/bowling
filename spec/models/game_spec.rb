@@ -3,6 +3,7 @@ require "rails_helper"
 describe Game, type: :model do
   let(:user) { User.find_by_name!('John') }
   let(:users) { [{ name: 'John' }] }
+
   subject { GameFactory.create(users) }
 
   def roll_all(times:, pins:)
@@ -18,7 +19,7 @@ describe Game, type: :model do
     subject.roll(5)
   end
 
-  describe "#score" do
+  describe "game rolls and score calculations" do
     context "multiple players" do
       let(:john) { User.find_by_name!('John') }
       let(:mike) { User.find_by_name!('Mike') }
@@ -32,8 +33,8 @@ describe Game, type: :model do
         subject.roll(3)
         subject.roll(4)
 
-        expect(subject.score(john)).to eq 10
-        expect(subject.score(mike)).to eq 7
+        expect(john.score).to eq 10
+        expect(mike.score).to eq 7
       end
     end
 
@@ -41,7 +42,7 @@ describe Game, type: :model do
       before { roll_all(times: 20, pins: 2) }
 
       it "returns the correct total score for the given user" do
-        expect(subject.score(user)).to eq 40
+        expect(user.score).to eq 40
       end
     end
 
@@ -55,7 +56,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score(user)).to eq 28
+        expect(user.score).to eq 28
       end
     end
 
@@ -69,7 +70,7 @@ describe Game, type: :model do
         subject.roll(5)
         roll_all(times: 14, pins: 0)
 
-        expect(subject.score(user)).to eq 33
+        expect(user.score).to eq 33
       end
     end
 
@@ -77,7 +78,7 @@ describe Game, type: :model do
       before { roll_all(times: 12, pins: 10) }
 
       it "returns the correct total score" do
-        expect(subject.score(user)).to eq 300
+        expect(user.score).to eq 300
       end
     end
   end
@@ -149,8 +150,8 @@ describe Game, type: :model do
         user_1 = User.find_by_name!('AP')
         user_2 = User.find_by_name!('LP')
 
-        expect(subject.score(user_1)).to eq 40
-        expect(subject.score(user_2)).to eq 40
+        expect(user_1.score).to eq 40
+        expect(user_2.score).to eq 40
       end
     end
   end
@@ -186,8 +187,8 @@ describe Game, type: :model do
 
       allow(game).to receive(:completed?).and_return(true)
       allow(game).to receive(:players).and_return(players)
-      allow(game).to receive(:score).with(user_1).and_return(120)
-      allow(game).to receive(:score).with(user_2).and_return(222)
+      allow(user_1).to receive(:score).and_return(120)
+      allow(user_2).to receive(:score).and_return(222)
 
       expect(game.winner).to eq user_2.name
     end
